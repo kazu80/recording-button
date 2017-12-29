@@ -1,0 +1,18 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen### PureScript template
+# Dependencies
+.psci_modules
+bower_components
+node_modules
+
+# Generated files
+.psci
+output
+

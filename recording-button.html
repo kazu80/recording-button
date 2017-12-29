@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="recording-button">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `recording-button`
+     * This is button for recording sound
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class RecordingButton extends Polymer.Element {
+      static get is() { return 'recording-button'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'recording-button'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(RecordingButton.is, RecordingButton);
+  </script>
+</dom-module>
