@@ -1,4 +1,7 @@
-<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" rel="import">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
 
 <dom-module id="recording-button">
   <template>
@@ -6,8 +9,41 @@
       :host {
         display: block;
       }
+
+      .wrapper {
+        display       : inline-block;
+        padding       : 10px 20px;
+        border        : 1px solid #2f9c0a;
+        border-radius : 4px;
+      }
+
+      .wrapper .time-wrapper {
+        display          : inline-block;
+        padding          : 5px 20px;
+        background-color : #eeeeee;
+        border-radius    : 10px;
+      }
+
+      .wrapper .time-wrapper .time {
+        color : #888888;
+      }
+
     </style>
-    <h2>Hello [[prop1]]!</h2>
+
+    <div class="wrapper">
+
+      <paper-icon-button icon="av:mic"></paper-icon-button>
+      <paper-icon-button icon="av:fiber-manual-record"></paper-icon-button>
+      <paper-icon-button icon="av:play-arrow"></paper-icon-button>
+      <paper-icon-button icon="av:pause"></paper-icon-button>
+      <div class="time-wrapper">
+        <div class="time">0:00:00</div>
+      </div>
+      <paper-icon-button icon="icons:file-download"></paper-icon-button>
+
+
+    </div>
+
   </template>
 
   <script>
