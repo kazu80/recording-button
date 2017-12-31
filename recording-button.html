@@ -4,69 +4,113 @@
 <link rel="import" href="bower_components/iron-icons/av-icons.html">
 
 <dom-module id="recording-button">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
+    <template>
+        <style>
+            :host {
+                display : block;
+            }
 
-      .wrapper {
-        display       : inline-block;
-        padding       : 10px 20px;
-        border        : 1px solid #2f9c0a;
-        border-radius : 4px;
-      }
+            .wrapper {
+                display       : inline-block;
+                padding       : 10px 20px;
+                border        : 1px solid #2f9c0a;
+                border-radius : 4px;
+            }
 
-      .wrapper .time-wrapper {
-        display          : inline-block;
-        padding          : 5px 20px;
-        background-color : #eeeeee;
-        border-radius    : 10px;
-      }
+            .wrapper .time-wrapper {
+                display          : inline-block;
+                padding          : 5px 20px;
+                background-color : #eeeeee;
+                border-radius    : 10px;
+            }
 
-      .wrapper .time-wrapper .time {
-        color : #888888;
-      }
+            .wrapper .time-wrapper .time {
+                color : #888888;
+            }
 
-    </style>
+        </style>
 
-    <div class="wrapper">
+        <div class="wrapper">
 
-      <paper-icon-button icon="av:mic"></paper-icon-button>
-      <paper-icon-button icon="av:fiber-manual-record"></paper-icon-button>
-      <paper-icon-button icon="av:play-arrow"></paper-icon-button>
-      <paper-icon-button icon="av:pause"></paper-icon-button>
-      <div class="time-wrapper">
-        <div class="time">0:00:00</div>
-      </div>
-      <paper-icon-button icon="icons:file-download"></paper-icon-button>
+            <paper-icon-button icon="av:mic"></paper-icon-button>
+            <paper-icon-button icon="av:fiber-manual-record"></paper-icon-button>
+            <paper-icon-button icon="av:play-arrow"></paper-icon-button>
+            <paper-icon-button icon="av:pause"></paper-icon-button>
+            <div class="time-wrapper">
+                <div class="time">{{time_string}}</div>
+            </div>
+            <paper-icon-button icon="icons:file-download"></paper-icon-button>
 
 
-    </div>
+        </div>
 
-  </template>
+    </template>
 
-  <script>
-    /**
-     * `recording-button`
-     * This is button for recording sound
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
-     */
-    class RecordingButton extends Polymer.Element {
-      static get is() { return 'recording-button'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'recording-button'
-          }
-        };
-      }
-    }
+    <script>
+        /**
+         * `recording-button`
+         * This is button for recording sound
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class RecordingButton extends Polymer.Element {
+            static get is () { return 'recording-button'; }
 
-    window.customElements.define(RecordingButton.is, RecordingButton);
-  </script>
+            static get properties () {
+                return {
+                    time       : {
+                        type : Number,
+                        value: 0
+                    },
+                    time_string: {
+                        type : String,
+                        value: '0:00:00'
+                    },
+                    interval_id: {
+                        type : Number,
+                        value: 0
+                    }
+                };
+            }
+
+            constructor () {
+                super ();
+            }
+
+            ready () {
+                super.ready ();
+
+                //
+                this.start ();
+            }
+
+            start () {
+                this.interval_id = setInterval (() => {
+                    this.time = this.time + 10;
+
+                    this.time_string = RecordingButton.createTime (this.time);
+                }, 10);
+            }
+
+            static createTime (time) {
+                const hour = Math.floor (time / (60 * 60 * 1000));
+                time = time - (hour * 60 * 60 * 1000);
+
+                const min = Math.floor (time / (60 * 1000));
+                time = time - (min * 60 * 1000);
+
+                const sec = Math.floor (time / 1000);
+
+                const hour_s = hour;
+                const min_s = ('00' + min).slice (-2);
+                const sec_s = ('00' + sec).slice (-2);
+
+                return hour_s + ':' + min_s + ':' + sec_s;
+            }
+        }
+
+        window.customElements.define (RecordingButton.is, RecordingButton);
+    </script>
 </dom-module>
