@@ -32,10 +32,10 @@
 
         <div class="wrapper">
 
-            <paper-icon-button icon="av:mic"></paper-icon-button>
-            <paper-icon-button icon="av:fiber-manual-record"></paper-icon-button>
-            <paper-icon-button icon="av:play-arrow"></paper-icon-button>
-            <paper-icon-button icon="av:pause"></paper-icon-button>
+            <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}"></paper-icon-button>
+            <paper-icon-button icon="av:fiber-manual-record" disabled="{{isDisableRecording}}"></paper-icon-button>
+            <paper-icon-button icon="av:play-arrow" disabled="{{isDisablePlay}}"></paper-icon-button>
+            <paper-icon-button icon="av:pause" disabled="{{isDisablePause}}"></paper-icon-button>
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
             </div>
@@ -60,17 +60,33 @@
 
             static get properties () {
                 return {
-                    time       : {
+                    time              : {
                         type : Number,
                         value: 0
                     },
-                    time_string: {
+                    time_string       : {
                         type : String,
                         value: '0:00:00'
                     },
-                    interval_id: {
+                    interval_id       : {
                         type : Number,
                         value: 0
+                    },
+                    isDisableMic      : {
+                        type : Boolean,
+                        value: false
+                    },
+                    isDisableRecording: {
+                        type : Boolean,
+                        value: false
+                    },
+                    isDisablePlay     : {
+                        type : Boolean,
+                        value: false
+                    },
+                    isDisablePause    : {
+                        type : Boolean,
+                        value: false
                     }
                 };
             }
