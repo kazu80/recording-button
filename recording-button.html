@@ -32,10 +32,10 @@
 
         <div class="wrapper">
 
-            <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}"></paper-icon-button>
-            <paper-icon-button icon="av:fiber-manual-record" disabled="{{isDisableRecording}}"></paper-icon-button>
-            <paper-icon-button icon="av:play-arrow" disabled="{{isDisablePlay}}"></paper-icon-button>
-            <paper-icon-button icon="av:pause" disabled="{{isDisablePause}}"></paper-icon-button>
+            <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
+            <paper-icon-button icon="av:fiber-manual-record" disabled="{{isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
+            <paper-icon-button icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
+            <paper-icon-button icon="av:stop" disabled="{{isDisableStop}}" on-click="clickStop"></paper-icon-button>
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
             </div>
@@ -84,9 +84,9 @@
                         type : Boolean,
                         value: false
                     },
-                    isDisablePause    : {
+                    isDisableStop     : {
                         type : Boolean,
-                        value: false
+                        value: true
                     }
                 };
             }
@@ -124,6 +124,28 @@
                 const sec_s = ('00' + sec).slice (-2);
 
                 return hour_s + ':' + min_s + ':' + sec_s;
+            }
+
+            clickMic () {
+                this.isDisableMic = !this.isDisableMic;
+            }
+
+            clickRecording () {
+                this.isDisableRecording = true;
+                this.isDisablePlay = true;
+                this.isDisableStop = false;
+            }
+
+            clickPlay () {
+                this.isDisableRecording = true;
+                this.isDisablePlay = true;
+                this.isDisableStop = false;
+            }
+
+            clickStop () {
+                this.isDisableRecording = false;
+                this.isDisablePlay = false;
+                this.isDisableStop = true;
             }
         }
 
