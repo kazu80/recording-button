@@ -61,8 +61,9 @@
             static get properties () {
                 return {
                     time              : {
-                        type : Number,
-                        value: 0
+                        type    : Number,
+                        value   : 0,
+                        observer: '_timeChanged'
                     },
                     time_string       : {
                         type : String,
@@ -102,8 +103,6 @@
             start () {
                 this.interval_id = setInterval (() => {
                     this.time = this.time + 10;
-
-                    this.time_string = RecordingButton.createTime (this.time);
                 }, 10);
             }
 
@@ -152,7 +151,13 @@
 
                 clearInterval (this.interval_id);
                 this.time = 0;
-                this.time_string = RecordingButton.createTime (this.time);
+            }
+
+            /**
+             * Observer
+             */
+            _timeChanged (val) {
+                this.time_string = RecordingButton.createTime (val);
             }
         }
 
