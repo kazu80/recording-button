@@ -97,9 +97,6 @@
 
             ready () {
                 super.ready ();
-
-                //
-                this.start ();
             }
 
             start () {
@@ -134,18 +131,28 @@
                 this.isDisableRecording = true;
                 this.isDisablePlay = true;
                 this.isDisableStop = false;
+
+                //
+                this.start ();
             }
 
             clickPlay () {
                 this.isDisableRecording = true;
                 this.isDisablePlay = true;
                 this.isDisableStop = false;
+
+                //
+                this.start ();
             }
 
             clickStop () {
                 this.isDisableRecording = false;
                 this.isDisablePlay = false;
                 this.isDisableStop = true;
+
+                clearInterval (this.interval_id);
+                this.time = 0;
+                this.time_string = RecordingButton.createTime (this.time);
             }
         }
 
