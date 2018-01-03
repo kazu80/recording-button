@@ -98,6 +98,23 @@
 
             ready () {
                 super.ready ();
+
+                // getUserMedia
+                if (!navigator.mediaDevices) {
+                    this.isDisableMic = false;
+                    console.log ('getUserMedia() not supported.');
+                    return;
+                }
+
+                navigator.mediaDevices.getUserMedia ({audio: true})
+                    .then ((stream) => {
+                        this.isDisableMic = true;
+                        console.log ('success!');
+                    })
+                    .catch ((err) => {
+                        this.isDisableMic = false;
+                        console.log (err.name + ': ' + err.message);
+                    });
             }
 
             start () {
