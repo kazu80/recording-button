@@ -115,11 +115,28 @@
 
                         // Media Recorder
                         this._mediaRecorder = new MediaRecorder (stream, {mimeType: 'audio/webm'});
+
+                        // Media Recorder Data available
                         this._mediaRecorder.ondataavailable = (event) => {
                             if (event.data.size > 0) {
                                 this._recordedChunks.push (event.data);
                             }
                         };
+
+                        // Media Recorder Error
+                        this._mediaRecorder.onerror = (error) => {
+                            console.error (error);
+                        };
+
+                        // Media Recorder Start
+                        this._mediaRecorder.onstart = (e) => {
+                            this.isRecording = true;
+                        };
+
+                        // Media Recorder Stop
+                        this._mediaRecorder.onstop = (e) => {
+                            this.isRecording = false;
+                        }
                     })
                     .catch ((err) => {
                         this.isDisableMic = false;
@@ -159,12 +176,13 @@
                     return;
                 }
 
-                this.isRecording = true;
                 this.isDisablePlay = true;
                 this.isDisableStop = false;
 
                 // Recording Start
-                this._mediaRecorder.start ();
+                if (!this.isRecording) {
+                    this._mediaRecorder.start ();
+                }
 
                 // timer start
                 this.start ();
@@ -187,7 +205,6 @@
                 // Recording Stop
                 if (this.isRecording) {
                     this._mediaRecorder.stop ();
-                    this.isRecording = false;
                 }
 
                 this.isDisablePlay = false;
