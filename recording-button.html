@@ -33,7 +33,7 @@
         <div class="wrapper">
 
             <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
-            <paper-icon-button icon="av:fiber-manual-record" disabled="{{isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
+            <paper-icon-button icon="av:fiber-manual-record" disabled="{{_isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
             <paper-icon-button icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
             <paper-icon-button icon="av:stop" disabled="{{isDisableStop}}" on-click="clickStop"></paper-icon-button>
             <div class="time-wrapper">
@@ -60,32 +60,33 @@
 
             static get properties () {
                 return {
-                    time              : {
+                    time         : {
                         type    : Number,
                         value   : 0,
                         observer: '_timeChanged'
                     },
-                    time_string       : {
+                    time_string  : {
                         type : String,
                         value: '0:00:00'
                     },
-                    interval_id       : {
+                    interval_id  : {
                         type : Number,
                         value: 0
                     },
-                    isDisableMic      : {
+                    isDisableMic : {
                         type : Boolean,
                         value: false
                     },
-                    isDisableRecording: {
+                    isRecording  : {
+                        type    : Boolean,
+                        value   : false,
+                        observer: '_isRecording'
+                    },
+                    isDisablePlay: {
                         type : Boolean,
                         value: false
                     },
-                    isDisablePlay     : {
-                        type : Boolean,
-                        value: false
-                    },
-                    isDisableStop     : {
+                    isDisableStop: {
                         type : Boolean,
                         value: true
                     }
@@ -94,6 +95,8 @@
 
             constructor () {
                 super ();
+
+                this._recordedChunks = [];
             }
 
             ready () {
@@ -109,7 +112,14 @@
                 navigator.mediaDevices.getUserMedia ({audio: true})
                     .then ((stream) => {
                         this.isDisableMic = true;
-                        console.log ('success!');
+
+                        // Media Recorder
+                        this._mediaRecorder = new MediaRecorder (stream, {mimeType: 'audio/webm'});
+                        this._mediaRecorder.ondataavailable = (event) => {
+                            if (event.data.size > 0) {
+                                this._recordedChunks.push (event.data);
+                            }
+                        };
                     })
                     .catch ((err) => {
                         this.isDisableMic = false;
@@ -144,16 +154,28 @@
             }
 
             clickRecording () {
-                this.isDisableRecording = true;
+                // Not enable when unable mic
+                if (!this.isDisableMic) {
+                    return;
+                }
+
+                this.isRecording = true;
                 this.isDisablePlay = true;
                 this.isDisableStop = false;
 
-                //
+                // Recording Start
+                this._mediaRecorder.start ();
+
+                // timer start
                 this.start ();
             }
 
             clickPlay () {
-                this.isDisableRecording = true;
+                // Not enable when recording
+                if (this.isRecording) {
+                    return;
+                }
+
                 this.isDisablePlay = true;
                 this.isDisableStop = false;
 
@@ -162,7 +184,12 @@
             }
 
             clickStop () {
-                this.isDisableRecording = false;
+                // Recording Stop
+                if (this.isRecording) {
+                    this._mediaRecorder.stop ();
+                    this.isRecording = false;
+                }
+
                 this.isDisablePlay = false;
                 this.isDisableStop = true;
 
@@ -175,6 +202,15 @@
              */
             _timeChanged (val) {
                 this.time_string = RecordingButton.createTime (val);
+            }
+
+            _isRecording (val) {
+                if (val) {
+                    this._isDisableRecording = true;
+                }
+                else {
+                    this._isDisableRecording = false;
+                }
             }
         }
 
