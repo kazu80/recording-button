@@ -2,6 +2,7 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" rel="import">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-icons/av-icons.html">
+<link rel="import" href="bower_components/audio-player/audio-player.html">
 
 <dom-module id="recording-button">
     <template>
@@ -30,8 +31,9 @@
 
         </style>
 
-        <div class="wrapper">
+        <audio-player id="player" src="{{_recordingSoundUrl}}" volume="5"></audio-player>
 
+        <div class="wrapper">
             <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
             <paper-icon-button icon="av:fiber-manual-record" disabled="{{_isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
             <paper-icon-button icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
@@ -40,8 +42,6 @@
                 <div class="time">{{time_string}}</div>
             </div>
             <paper-icon-button icon="icons:file-download"></paper-icon-button>
-
-
         </div>
 
     </template>
@@ -102,6 +102,14 @@
             ready () {
                 super.ready ();
 
+                // player
+                this._audioPlayer = this.shadowRoot.querySelector ('#player');
+
+                // player End Event
+                this._audioPlayer.onend = (e) => {
+                    this.clickStop ();
+                };
+
                 // getUserMedia
                 if (!navigator.mediaDevices) {
                     this.isDisableMic = false;
@@ -136,6 +144,12 @@
                         // Media Recorder Stop
                         this._mediaRecorder.onstop = (e) => {
                             this.isRecording = false;
+
+                            const superBuffer = new Blob (this._recordedChunks);
+
+                            this._recordedChunks = [];
+
+                            this._recordingSoundUrl = window.URL.createObjectURL (superBuffer);
                         }
                     })
                     .catch ((err) => {
@@ -197,7 +211,10 @@
                 this.isDisablePlay = true;
                 this.isDisableStop = false;
 
-                //
+                // play of recorded audio
+                this._audioPlayer._play ();
+
+                // timer start
                 this.start ();
             }
 
