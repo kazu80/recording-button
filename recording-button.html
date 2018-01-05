@@ -1,5 +1,5 @@
 <link rel="import" href="bower_components/polymer/polymer-element.html">
-<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" rel="import">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="bower_components/iron-icons/av-icons.html">
 <link rel="import" href="bower_components/audio-player/audio-player.html">
@@ -31,7 +31,8 @@
 
         </style>
 
-        <audio-player id="player" src="{{_recordingSoundUrl}}" volume="5"></audio-player>
+        <audio-player id="player" src="{{recordingSoundUrl}}" volume="5"></audio-player>
+        <a id="download" href="{{recordingSoundUrl}}" download="{{_downloadFile}}" style="display: none"></a>
 
         <div class="wrapper">
             <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
@@ -41,7 +42,7 @@
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
             </div>
-            <paper-icon-button icon="icons:file-download"></paper-icon-button>
+            <paper-icon-button icon="icons:file-download" disabled="{{isDisableDownload}}" on-click="clickDownload"></paper-icon-button>
         </div>
 
     </template>
@@ -60,35 +61,44 @@
 
             static get properties () {
                 return {
-                    time         : {
+                    time             : {
                         type    : Number,
                         value   : 0,
                         observer: '_timeChanged'
                     },
-                    time_string  : {
+                    time_string      : {
                         type : String,
                         value: '0:00:00'
                     },
-                    interval_id  : {
+                    interval_id      : {
                         type : Number,
                         value: 0
                     },
-                    isDisableMic : {
+                    isDisableMic     : {
                         type : Boolean,
                         value: false
                     },
-                    isRecording  : {
+                    isRecording      : {
                         type    : Boolean,
                         value   : false,
                         observer: '_isRecording'
                     },
-                    isDisablePlay: {
+                    isDisablePlay    : {
                         type : Boolean,
                         value: false
                     },
-                    isDisableStop: {
+                    isDisableStop    : {
                         type : Boolean,
                         value: true
+                    },
+                    isDisableDownload: {
+                        type : Boolean,
+                        value: true
+                    },
+                    recordingSoundUrl: {
+                        type    : String,
+                        value   : null,
+                        observer: '_recordingSoundUrlChange'
                     }
                 };
             }
@@ -101,6 +111,9 @@
 
             ready () {
                 super.ready ();
+
+                // download
+                this._download = this.shadowRoot.querySelector ('#download');
 
                 // player
                 this._audioPlayer = this.shadowRoot.querySelector ('#player');
@@ -149,7 +162,11 @@
 
                             this._recordedChunks = [];
 
-                            this._recordingSoundUrl = window.URL.createObjectURL (superBuffer);
+                            // Set URL for download
+                            this.recordingSoundUrl = window.URL.createObjectURL (superBuffer);
+
+                            // Set name of download file
+                            this._downloadFile = RecordingButton.getDownloadFileName ();
                         }
                     })
                     .catch ((err) => {
@@ -162,22 +179,6 @@
                 this.interval_id = setInterval (() => {
                     this.time = this.time + 10;
                 }, 10);
-            }
-
-            static createTime (time) {
-                const hour = Math.floor (time / (60 * 60 * 1000));
-                time = time - (hour * 60 * 60 * 1000);
-
-                const min = Math.floor (time / (60 * 1000));
-                time = time - (min * 60 * 1000);
-
-                const sec = Math.floor (time / 1000);
-
-                const hour_s = hour;
-                const min_s = ('00' + min).slice (-2);
-                const sec_s = ('00' + sec).slice (-2);
-
-                return hour_s + ':' + min_s + ':' + sec_s;
             }
 
             clickMic () {
@@ -231,6 +232,40 @@
                 this.time = 0;
             }
 
+            clickDownload () {
+                this._download.click ();
+            }
+
+            /**
+             * Static methods
+             */
+            static createTime (time) {
+                const hour = Math.floor (time / (60 * 60 * 1000));
+                time = time - (hour * 60 * 60 * 1000);
+
+                const min = Math.floor (time / (60 * 1000));
+                time = time - (min * 60 * 1000);
+
+                const sec = Math.floor (time / 1000);
+
+                const hour_s = hour;
+                const min_s = ('00' + min).slice (-2);
+                const sec_s = ('00' + sec).slice (-2);
+
+                return hour_s + ':' + min_s + ':' + sec_s;
+            }
+
+            static getDownloadFileName () {
+                const now = new Date ();
+                const y = now.getFullYear ();
+                const m = (`00${now.getMonth () + 1}`).slice (-2);
+                const d = (`00${now.getDate ()}`).slice (-2);
+                const hour = (`00${now.getHours ()}`).slice (-2);
+                const min = (`00${now.getMinutes ()}`).slice (-2);
+                const sec = (`00${now.getSeconds ()}`).slice (-2);
+                return `recording-${y}${m}${d}${hour}${min}${sec}.webm`;
+            }
+
             /**
              * Observer
              */
@@ -239,12 +274,11 @@
             }
 
             _isRecording (val) {
-                if (val) {
-                    this._isDisableRecording = true;
-                }
-                else {
-                    this._isDisableRecording = false;
-                }
+                this._isDisableRecording = !!val;
+            }
+
+            _recordingSoundUrlChange (val) {
+                this.isDisableDownload = !val;
             }
         }
 
