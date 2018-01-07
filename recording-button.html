@@ -9,40 +9,143 @@
         <style>
             :host {
                 display : block;
+
+                        --control-wrapper: {
+                            padding       : 10px 20px;
+                            border        : 1px solid #888888;
+                            border-radius : 4px;
+                        };
+
+                        --time-wrapper: {
+                            padding          : 5px 20px;
+                            background-color : #eeeeee;
+                            border-radius    : 10px;
+                        };
+
+                        --time: {
+                            color : #888888;
+                        };
+
+                        --buttons: {
+                        };
+
+                        --buttons-disabled: {
+                        };
+
+                        --button-mic: {
+                        };
+
+                        --button-mic-disabled: {
+                        };
+
+                        --button-rec: {
+                            color : #ff0006;
+                        };
+
+                        --button-rec-disabled: {
+                            color : #ff6f6f;
+                        };
+
+                        --button-play: {
+                        };
+
+                        --button-play-disabled: {
+                        };
+
+                        --button-stop: {
+                        };
+
+                        --button-stop-disabled: {
+                        };
+
+                        --button-dl: {
+                        };
+
+                        --button-dl-disabled: {
+                        };
             }
 
-            .wrapper {
-                display       : inline-block;
-                padding       : 10px 20px;
-                border        : 1px solid #2f9c0a;
-                border-radius : 4px;
+            .control-wrapper {
+                display : inline-block;
+                @apply --control-wrapper;
             }
 
-            .wrapper .time-wrapper {
-                display          : inline-block;
-                padding          : 5px 20px;
-                background-color : #eeeeee;
-                border-radius    : 10px;
+            .time-wrapper {
+                display : inline-block;
+                @apply --time-wrapper;
             }
 
-            .wrapper .time-wrapper .time {
-                color : #888888;
+            .time {
+                @apply --time;
             }
 
+            .buttons {
+                @apply --buttons;
+            }
+
+            .buttons[disabled] {
+                @apply --buttons;
+                @apply --buttons-disabled;
+            }
+
+            .button-mic {
+                @apply --button-mic;
+            }
+
+            .button-mic[disabled] {
+                @apply --button-mic;
+                @apply --button-mic-disabled;
+            }
+
+            .button-rec {
+                @apply --button-rec;
+            }
+
+            .button-rec[disabled] {
+                @apply --button-rec;
+                @apply --button-rec-disabled;
+            }
+
+            .button-play {
+                @apply --button-play;
+            }
+
+            .button-play[disabled] {
+                @apply --button-play;
+                @apply --button-play-disabled;
+            }
+
+            .button-stop {
+                @apply --button-stop;
+            }
+
+            .button-stop[disabled] {
+                @apply --button-stop;
+                @apply --button-stop-disabled;
+            }
+
+            .button-dl {
+                @apply --button-dl;
+            }
+
+            .button-dl[disabled] {
+                @apply --button-dl;
+                @apply --button-dl-disabled;
+            }
         </style>
 
         <audio-player id="player" src="{{recordingSoundUrl}}" volume="5"></audio-player>
         <a id="download" href="{{recordingSoundUrl}}" download="{{_downloadFile}}" style="display: none"></a>
 
-        <div class="wrapper">
-            <paper-icon-button icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
-            <paper-icon-button icon="av:fiber-manual-record" disabled="{{_isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
-            <paper-icon-button icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
-            <paper-icon-button icon="av:stop" disabled="{{isDisableStop}}" on-click="clickStop"></paper-icon-button>
+        <div class="control-wrapper">
+            <paper-icon-button class="buttons button-mic" icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
+            <paper-icon-button class="buttons button-rec" icon="av:fiber-manual-record" disabled="{{_isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
+            <paper-icon-button class="buttons button-play" icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
+            <paper-icon-button class="buttons button-stop" icon="av:stop" disabled="{{isDisableStop}}" on-click="clickStop"></paper-icon-button>
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
             </div>
-            <paper-icon-button icon="icons:file-download" disabled="{{isDisableDownload}}" on-click="clickDownload"></paper-icon-button>
+            <paper-icon-button class="buttons button-dl" icon="icons:file-download" disabled="{{isDisableDownload}}" on-click="clickDownload"></paper-icon-button>
         </div>
 
     </template>
