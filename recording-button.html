@@ -177,18 +177,23 @@
                         type : Number,
                         value: 0
                     },
+                    isMic            : {
+                        type    : Boolean,
+                        value   : false,
+                        observer: '_isMic'
+                    },
                     isDisableMic     : {
                         type : Boolean,
                         value: false
                     },
                     isRecording      : {
-                        type    : Boolean,
-                        value   : false,
+                        type    : String,
+                        value   : null,
                         observer: '_isRecording'
                     },
                     isDisablePlay    : {
                         type : Boolean,
-                        value: false
+                        value: true
                     },
                     isDisableStop    : {
                         type : Boolean,
@@ -210,6 +215,58 @@
                 super ();
 
                 this._recordedChunks = [];
+
+                /**
+                 * Callbacks
+                 */
+                this._callbackGetUserMedia = (stream) => {
+                    this.isMic = true;
+                    this.isRecording = 'off';
+
+                    // Media Recorder
+                    this._mediaRecorder = new MediaRecorder (stream, {mimeType: 'audio/webm'});
+
+                    // Media Recorder Data available
+                    this._mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            this._recordedChunks.push (event.data);
+                        }
+                    };
+
+                    // Media Recorder Error
+                    this._mediaRecorder.onerror = (error) => {
+                        console.error (error);
+                    };
+
+                    // Media Recorder Start
+                    this._mediaRecorder.onstart = (e) => {
+                        this.isRecording = 'on';
+                    };
+
+                    // Media Recorder Stop
+                    this._mediaRecorder.onstop = (e) => {
+                        this.isRecording = 'off';
+
+                        const superBuffer = new Blob (this._recordedChunks);
+
+                        this._recordedChunks = [];
+
+                        // Set URL for download
+                        this.recordingSoundUrl = window.URL.createObjectURL (superBuffer);
+
+                        // Set name of download file
+                        this._downloadFile = RecordingButton.getDownloadFileName ();
+                    }
+                };
+
+                this._callbackGetUserMediaError = (err) => {
+                    this.isDisableMic = false;
+                    this.isDisablePlay = true;
+                    this.isDisableStop = true;
+                    this.isDisableDownload = true;
+
+                    console.error (err.name + ': ' + err.message);
+                };
             }
 
             ready () {
@@ -229,53 +286,18 @@
                 // getUserMedia
                 if (!navigator.mediaDevices) {
                     this.isDisableMic = false;
-                    console.log ('getUserMedia() not supported.');
+                    this.isRecording = null;
+                    this.isDisablePlay = true;
+                    this.isDisableStop = true;
+                    this.isDisableDownload = true;
+
+                    console.error ('getUserMedia() not supported.');
                     return;
                 }
 
                 navigator.mediaDevices.getUserMedia ({audio: true})
-                    .then ((stream) => {
-                        this.isDisableMic = true;
-
-                        // Media Recorder
-                        this._mediaRecorder = new MediaRecorder (stream, {mimeType: 'audio/webm'});
-
-                        // Media Recorder Data available
-                        this._mediaRecorder.ondataavailable = (event) => {
-                            if (event.data.size > 0) {
-                                this._recordedChunks.push (event.data);
-                            }
-                        };
-
-                        // Media Recorder Error
-                        this._mediaRecorder.onerror = (error) => {
-                            console.error (error);
-                        };
-
-                        // Media Recorder Start
-                        this._mediaRecorder.onstart = (e) => {
-                            this.isRecording = true;
-                        };
-
-                        // Media Recorder Stop
-                        this._mediaRecorder.onstop = (e) => {
-                            this.isRecording = false;
-
-                            const superBuffer = new Blob (this._recordedChunks);
-
-                            this._recordedChunks = [];
-
-                            // Set URL for download
-                            this.recordingSoundUrl = window.URL.createObjectURL (superBuffer);
-
-                            // Set name of download file
-                            this._downloadFile = RecordingButton.getDownloadFileName ();
-                        }
-                    })
-                    .catch ((err) => {
-                        this.isDisableMic = false;
-                        console.log (err.name + ': ' + err.message);
-                    });
+                    .then (this._callbackGetUserMedia)
+                    .catch (this._callbackGetUserMediaError);
             }
 
             start () {
@@ -285,12 +307,15 @@
             }
 
             clickMic () {
-                this.isDisableMic = !this.isDisableMic;
+                navigator.mediaDevices.getUserMedia ({audio: true})
+                    .then (this._callbackGetUserMedia)
+                    .catch (this._callbackGetUserMediaError);
             }
 
             clickRecording () {
                 // Not enable when unable mic
                 if (!this.isDisableMic) {
+                    this.isRecording = null;
                     return;
                 }
 
@@ -298,7 +323,7 @@
                 this.isDisableStop = false;
 
                 // Recording Start
-                if (!this.isRecording) {
+                if (this.isRecording === 'off') {
                     this._mediaRecorder.start ();
                 }
 
@@ -308,7 +333,7 @@
 
             clickPlay () {
                 // Not enable when recording
-                if (this.isRecording) {
+                if (this.isRecording === 'on') {
                     return;
                 }
 
@@ -324,7 +349,7 @@
 
             clickStop () {
                 // Recording Stop
-                if (this.isRecording) {
+                if (this.isRecording === 'on') {
                     this._mediaRecorder.stop ();
                 }
 
@@ -376,8 +401,38 @@
                 this.time_string = RecordingButton.createTime (val);
             }
 
+            _isMic (val) {
+                this.isDisableMic = !!val;
+
+                if (val) {
+                    this.isRecording = 'ready';
+                    this.isDisablePlay = true;
+                    this.isDisableStop = true;
+                    this.isDisableDownload = true;
+                } else {
+                    this.isRecording = null;
+                    this.isDisablePlay = true;
+                    this.isDisableStop = true;
+                    this.isDisableDownload = true;
+                }
+
+            }
+
             _isRecording (val) {
-                this._isDisableRecording = !!val;
+                switch (val) {
+                    case 'ready':
+                        this._isDisableRecording = false;
+                        break;
+                    case 'on':
+                        this._isDisableRecording = true;
+                        break;
+                    case 'off':
+                        this._isDisableRecording = false;
+                        break;
+                    default :
+                        this._isDisableRecording = true;
+                        break;
+                }
             }
 
             _recordingSoundUrlChange (val) {
