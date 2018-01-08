@@ -1,8 +1,16 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-icons/av-icons.html">
+<link rel="import" href="bower_components/audio-player/audio-player.html">
+
+<!-- Real environment
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-icons/av-icons.html">
 <link rel="import" href="../audio-player/audio-player.html">
+-->
 
 <dom-module id="recording-button">
     <template>
@@ -139,6 +147,7 @@
             <paper-icon-button class="buttons button-mic" icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
             <paper-icon-button class="buttons button-rec" icon="av:fiber-manual-record" disabled="{{_isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
             <paper-icon-button class="buttons button-play" icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
+            <paper-icon-button class="buttons button-stop" icon="av:pause" disabled="{{isDisablePause}}" on-click="clickPause"></paper-icon-button>
             <paper-icon-button class="buttons button-stop" icon="av:stop" disabled="{{isDisableStop}}" on-click="clickStop"></paper-icon-button>
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
@@ -193,6 +202,10 @@
                         type : Boolean,
                         value: true
                     },
+                    isDisablePause   : {
+                        type : Boolean,
+                        value: true
+                    },
                     isDisableStop    : {
                         type : Boolean,
                         value: true
@@ -241,6 +254,16 @@
                         this.isRecording = 'on';
                     };
 
+                    // Media Recorder Pause
+                    this._mediaRecorder.onpause = (e) => {
+                        this.isRecording = 'pause';
+                    };
+
+                    // Media Recorder Resume
+                    this._mediaRecorder.onresume = (e) => {
+                        this.isRecording = 'on';
+                    };
+
                     // Media Recorder Stop
                     this._mediaRecorder.onstop = (e) => {
                         this.isRecording = 'off';
@@ -260,6 +283,7 @@
                 this._callbackGetUserMediaError = (err) => {
                     this.isDisableMic = false;
                     this.isDisablePlay = true;
+                    this.isDisablePause = true;
                     this.isDisableStop = true;
                     this.isDisableDownload = true;
 
@@ -304,6 +328,27 @@
                 }, 10);
             }
 
+            pause () {
+                if (this.interval_id) {
+                    clearInterval (this.interval_id);
+                    this.interval_id = null;
+                }
+            }
+
+            resume () {
+                this.interval_id = setInterval (() => {
+                    this.time = this.time + 10;
+                }, 10);
+            }
+
+            stop () {
+                if (this.interval_id) {
+                    clearInterval (this.interval_id);
+                    this.interval_id = null;
+                    this.time = 0;
+                }
+            }
+
             clickMic () {
                 navigator.mediaDevices.getUserMedia ({audio: true})
                     .then (this._callbackGetUserMedia)
@@ -318,15 +363,24 @@
                 }
 
                 this.isDisablePlay = true;
+                this.isDisablePause = false;
                 this.isDisableStop = false;
 
                 // Recording Start
                 if (this.isRecording === 'off') {
                     this._mediaRecorder.start ();
+
+                    // Timer start
+                    this.start ();
                 }
 
-                // timer start
-                this.start ();
+                // Recording Pause
+                if (this.isRecording === 'pause') {
+                    this._mediaRecorder.resume ();
+
+                    // Timer start
+                    this.resume ();
+                }
             }
 
             clickPlay () {
@@ -336,26 +390,40 @@
                 }
 
                 this.isDisablePlay = true;
+                this.isDisablePause = true;
                 this.isDisableStop = false;
 
                 // play of recorded audio
                 this._audioPlayer._play ();
 
-                // timer start
+                // Timer start
                 this.start ();
+            }
+
+            clickPause () {
+                if (this.isRecording !== 'on') {
+                    return;
+                }
+
+                this.isRecording = 'pause';
+                this.isDisablePause = true;
+
+                // Timer pause
+                this.pause ();
             }
 
             clickStop () {
                 // Recording Stop
-                if (this.isRecording === 'on') {
+                if (this.isRecording === 'on' || this.isRecording === 'pause') {
                     this._mediaRecorder.stop ();
                 }
 
                 this.isDisablePlay = false;
+                this.isDisablePause = true;
                 this.isDisableStop = true;
 
-                clearInterval (this.interval_id);
-                this.time = 0;
+                // Timer stop
+                this.stop ();
             }
 
             clickDownload () {
@@ -425,6 +493,10 @@
                         this._isDisableRecording = true;
                         break;
                     case 'off':
+                        this._isDisableRecording = false;
+                        break;
+                    case 'pause':
+                        this._mediaRecorder.pause ();
                         this._isDisableRecording = false;
                         break;
                     default :
