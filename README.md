@@ -1,21 +1,43 @@
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/owner/my-element)
+
 # \<recording-button\>
 
-This is button for recording sound
+This is control panel for recording sound.It's able to recording sound, play recorded sound and download recorded sound.
 
-## Install the Polymer-CLI
+## DEMO
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
+<!--
+```html
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="recording-button.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<recording-button></recording-button>
+```
 
-## Viewing Your Element
+## Installation
 
 ```
-$ polymer serve
+$ bower install --save monkick/recording-button
 ```
 
-## Running Tests
+## Usage
 
-```
-$ polymer test
+At first. Import it at header.  
+
+```html
+    <link rel="import" href="../bower_components/recording-button/recording-button.html">
 ```
 
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+Next. Add the `recording-button` custom tag in body.
+
+```html
+    <recording-button></recording-button>
+```
+
