@@ -428,22 +428,14 @@
             }
 
             clickStop () {
-
-                console.log ('foo');
-
                 // Recording Stop
                 if (this.isRecording === 'on' || this.isRecording === 'pause') {
-
-                    console.log ('bar');
-
                     this._mediaRecorder.stop ();
                 }
 
                 this.isDisablePlay = false;
                 this.isDisablePause = true;
                 this.isDisableStop = true;
-
-                console.log ('baz');
 
                 // Timer stop
                 this.stop ();
