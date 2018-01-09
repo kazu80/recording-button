@@ -58,6 +58,12 @@
                 --button-play-disabled: {
                 };
 
+                --button-pause: {
+                };
+
+                --button-pause-disabled: {
+                };
+
                 --button-stop: {
                 };
 
@@ -121,6 +127,15 @@
                 @apply --button-play-disabled;
             }
 
+            .button-pause {
+                @apply --button-pause;
+            }
+
+            .button-pause[disabled] {
+                @apply --button-pause;
+                @apply --button-pause-disabled;
+            }
+
             .button-stop {
                 @apply --button-stop;
             }
@@ -147,7 +162,7 @@
             <paper-icon-button class="buttons button-mic" icon="av:mic" disabled="{{isDisableMic}}" on-click="clickMic"></paper-icon-button>
             <paper-icon-button class="buttons button-rec" icon="av:fiber-manual-record" disabled="{{_isDisableRecording}}" on-click="clickRecording"></paper-icon-button>
             <paper-icon-button class="buttons button-play" icon="av:play-arrow" disabled="{{isDisablePlay}}" on-click="clickPlay"></paper-icon-button>
-            <paper-icon-button class="buttons button-stop" icon="av:pause" disabled="{{isDisablePause}}" on-click="clickPause"></paper-icon-button>
+            <paper-icon-button class="buttons button-pause" icon="av:pause" disabled="{{isDisablePause}}" on-click="clickPause"></paper-icon-button>
             <paper-icon-button class="buttons button-stop" icon="av:stop" disabled="{{isDisableStop}}" on-click="clickStop"></paper-icon-button>
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
@@ -345,8 +360,8 @@
                 if (this.interval_id) {
                     clearInterval (this.interval_id);
                     this.interval_id = null;
-                    this.time = 0;
                 }
+                this.time = 0;
             }
 
             clickMic () {
@@ -413,14 +428,22 @@
             }
 
             clickStop () {
+
+                console.log ('foo');
+
                 // Recording Stop
                 if (this.isRecording === 'on' || this.isRecording === 'pause') {
+
+                    console.log ('bar');
+
                     this._mediaRecorder.stop ();
                 }
 
                 this.isDisablePlay = false;
                 this.isDisablePause = true;
                 this.isDisableStop = true;
+
+                console.log ('baz');
 
                 // Timer stop
                 this.stop ();
