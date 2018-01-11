@@ -146,6 +146,7 @@
             }
 
             .button-dl {
+                position : relative;
                 @apply --button-dl;
             }
 
@@ -153,6 +154,20 @@
                 @apply --button-dl;
                 @apply --button-dl-disabled;
             }
+
+            .badge::after {
+                position            : absolute;
+                top                 : 5px;
+                right               : 5px;
+                content             : "";
+                width               : 8px;
+                height              : 8px;
+                background-image    : url("assets/image/circle.svg");
+                background-repeat   : no-repeat;
+                background-position : center;
+                background-size     : 100%;
+            }
+
         </style>
 
         <audio-player id="player" src="{{recordingSoundUrl}}" volume="5"></audio-player>
@@ -167,7 +182,7 @@
             <div class="time-wrapper">
                 <div class="time">{{time_string}}</div>
             </div>
-            <paper-icon-button class="buttons button-dl" icon="icons:file-download" disabled="{{isDisableDownload}}" on-click="clickDownload"></paper-icon-button>
+            <paper-icon-button id="recorded-sound-download" class$="{{getClasses(_isNewDownload)}}" icon="icons:file-download" disabled="{{isDisableDownload}}" on-click="clickDownload"></paper-icon-button>
         </div>
 
     </template>
@@ -241,6 +256,7 @@
                 super ();
 
                 this._recordedChunks = [];
+                this._isNewDownload = false;
 
                 /**
                  * Callbacks
@@ -292,6 +308,9 @@
 
                         // Set name of download file
                         this._downloadFile = RecordingButton.getDownloadFileName ();
+
+                        // Set new flag
+                        this._isNewDownload = true;
                     }
                 };
 
@@ -443,6 +462,16 @@
 
             clickDownload () {
                 this._download.click ();
+                this._isNewDownload = false;
+            }
+
+            getClasses (val) {
+                let classes = 'buttons button-dl';
+                if (val) {
+                    classes += ' badge';
+                }
+
+                return classes;
             }
 
             /**
