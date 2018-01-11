@@ -1,98 +1,98 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
     <title>recording-button demo</title>
 
-      <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-      <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-      <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../recording-button.html">
 
     <custom-style>
-      <style is="custom-style" include="demo-pages-shared-styles">
-          #custom {
-              --control-wrapper: {
-                  border        : 1px solid #192888;
-                  border-radius : 0;
-                  box-shadow    : 3px 3px 5px 0 #888888;
-              };
+        <style is="custom-style" include="demo-pages-shared-styles">
+            #custom {
+                --control-wrapper: {
+                    border        : 1px solid #192888;
+                    border-radius : 0;
+                    box-shadow    : 3px 3px 5px 0 #888888;
+                };
 
-              --time-wrapper: {
-                  background-color : #666666;
-                  border-radius    : 0;
-                  box-shadow       : 0px 0px 10px 0px #000000 inset;
-              };
+                --time-wrapper: {
+                    background-color : #666666;
+                    border-radius    : 0;
+                    box-shadow       : 0px 0px 10px 0px #000000 inset;
+                };
 
-              --time: {
-                  color : #fffe62;
-              };
+                --time: {
+                    color : #fffe62;
+                };
 
-              /**
+                /**
                * Common style of buttons
                */
-              --buttons: {
-              };
+                --buttons: {
+                };
 
-              --buttons-disabled: {
-              };
+                --buttons-disabled: {
+                };
 
-              --button-mic: {
-                  color : #ff0006;
-              };
+                --button-mic: {
+                    color : #ff0006;
+                };
 
-              --button-mic-disabled: {
-                  color            : #ffffff;
-                  background-color : #ff0006;
-              };
+                --button-mic-disabled: {
+                    color            : #ffffff;
+                    background-color : #ff0006;
+                };
 
-              --button-rec: {
-                  color : #ff0006;
-              };
+                --button-rec: {
+                    color : #ff0006;
+                };
 
-              --button-rec-disabled: {
-                  color : #ff6f6f;
-              };
+                --button-rec-disabled: {
+                    color : #ff6f6f;
+                };
 
-              --button-play: {
-              };
+                --button-play: {
+                };
 
-              --button-play-disabled: {
-              };
+                --button-play-disabled: {
+                };
 
-              --button-stop: {
-              };
+                --button-stop: {
+                };
 
-              --button-stop-disabled: {
-              };
+                --button-stop-disabled: {
+                };
 
-              --button-dl: {
-              };
+                --button-dl: {
+                };
 
-              --button-dl-disabled: {
-              };
-          }
-      </style>
+                --button-dl-disabled: {
+                };
+            }
+        </style>
     </custom-style>
-  </head>
-  <body>
-    <div class="vertical-section-container centered">
-      <h3>Basic recording-button demo</h3>
-      <demo-snippet>
+</head>
+<body>
+<div class="vertical-section-container centered">
+    <h3>Basic recording-button demo</h3>
+    <demo-snippet>
         <template>
-          <recording-button></recording-button>
+            <recording-button></recording-button>
         </template>
-      </demo-snippet>
+    </demo-snippet>
 
-        <h3>Custom style version</h3>
-        <demo-snippet>
-            <template>
-                <recording-button id="custom"></recording-button>
-            </template>
-        </demo-snippet>
-    </div>
-  </body>
+    <h3>Custom style version</h3>
+    <demo-snippet>
+        <template>
+            <recording-button id="custom"></recording-button>
+        </template>
+    </demo-snippet>
+</div>
+</body>
 </html>
