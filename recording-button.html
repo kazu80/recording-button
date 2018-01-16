@@ -3,6 +3,7 @@
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../iron-icons/av-icons.html">
 <link rel="import" href="../audio-player/audio-player.html">
+<link rel="import" href="../app-getusermedia/app-getusermedia.html">
 
 <dom-module id="recording-button">
     <template>
@@ -162,6 +163,7 @@
 
         </style>
 
+        <app-getusermedia id="getusermedia" audio></app-getusermedia>
         <audio-player id="player" src="{{recordingSoundUrl}}" volume="5"></audio-player>
         <a id="download" href="{{recordingSoundUrl}}" download="{{_downloadFile}}" style="display: none"></a>
 
@@ -249,11 +251,29 @@
 
                 this._recordedChunks = [];
                 this._isNewDownload = false;
+            }
 
-                /**
-                 * Callbacks
-                 */
-                this._callbackGetUserMedia = (stream) => {
+            ready () {
+                super.ready ();
+
+                // download
+                this._download = this.shadowRoot.querySelector ('#download');
+
+                // player
+                this._audioPlayer = this.shadowRoot.querySelector ('#player');
+
+                // getusermedia
+                this._getusermedia = this.shadowRoot.querySelector ('#getusermedia');
+
+                // player End Event
+                this._audioPlayer.onend = (e) => {
+                    this.clickStop ();
+                };
+
+                // get media stream
+                this._getusermedia.addEventListener ('getusermedia', (event) => {
+                    const stream = event.detail.stream;
+
                     this.isMic = true;
                     this.isRecording = 'off';
 
@@ -304,48 +324,23 @@
                         // Set new flag
                         this._isNewDownload = true;
                     }
-                };
 
-                this._callbackGetUserMediaError = (err) => {
+                });
+
+                //
+                this._getusermedia.addEventListener ('error', (event) => {
+                    const message = event.detail.message;
+                    const err = event.detail.error;
+
                     this.isDisableMic = false;
+                    this.isRecording = null;
                     this.isDisablePlay = true;
                     this.isDisablePause = true;
                     this.isDisableStop = true;
                     this.isDisableDownload = true;
 
-                    console.error (err.name + ': ' + err.message);
-                };
-            }
-
-            ready () {
-                super.ready ();
-
-                // download
-                this._download = this.shadowRoot.querySelector ('#download');
-
-                // player
-                this._audioPlayer = this.shadowRoot.querySelector ('#player');
-
-                // player End Event
-                this._audioPlayer.onend = (e) => {
-                    this.clickStop ();
-                };
-
-                // getUserMedia
-                if (!navigator.mediaDevices) {
-                    this.isDisableMic = false;
-                    this.isRecording = null;
-                    this.isDisablePlay = true;
-                    this.isDisableStop = true;
-                    this.isDisableDownload = true;
-
-                    console.error ('getUserMedia() not supported.');
-                    return;
-                }
-
-                navigator.mediaDevices.getUserMedia ({audio: true})
-                    .then (this._callbackGetUserMedia)
-                    .catch (this._callbackGetUserMediaError);
+                    console.error (message);
+                });
             }
 
             start () {
@@ -376,9 +371,7 @@
             }
 
             clickMic () {
-                navigator.mediaDevices.getUserMedia ({audio: true})
-                    .then (this._callbackGetUserMedia)
-                    .catch (this._callbackGetUserMediaError);
+                this._getusermedia.start ();
             }
 
             clickRecording () {

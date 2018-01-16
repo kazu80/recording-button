@@ -4,6 +4,10 @@
 
 This is control panel for recording sound.It's able to recording sound, play recorded sound and download recorded sound.
 
+## VERSION
+
+v1.2.0
+
 ## DEMO
 
 <!--
